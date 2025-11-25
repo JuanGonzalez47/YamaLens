@@ -1,0 +1,59 @@
+/.venv
+/runs
+/train_piez_yolov11m
+/train_piez_yolov11n
+/train_piez_yolov11s
+ventana_01.py
+piezas_yolov11n.mp4
+piezas_yolov11s.mp4
+video_yolov11n.mp4
+/detect_piezas.v7i.yolov11
+/pruebas
+media/video_20250806_14_37_27.mp4
+/data/Pieces Count.v1-dataset-basis-5-classes-24-11-2025.coco
+
+# Python virtual environments
+venv/
+venv*/
+ENV/
+.env/
+.envrc
+env/
+env.bak/
+*.env
+*.venv
+
+# Python cache and bytecode
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+
+# Jupyter and IPython
+.ipynb_checkpoints/
+
+# pip cache
+pip-wheel-metadata/
+.pytest_cache/
+.mypy_cache/
+.cache/
+
+# OS files
+Thumbs.db
+.DS_Store
+ehthumbs.db
+Desktop.ini
+
+# Log and temp files
+*.log
+*.tmp
+*.bak
+*.swp
+*.swo
+*.orig
+*.old
+
+# Models and checkpoints
+*.pth
+*.pt
