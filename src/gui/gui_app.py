@@ -6,20 +6,7 @@ import sys
 import os
 from pathlib import Path
 from PyQt5.QtWidgets import (
-    QApplication, QWidget, QVBoxLayout, QPushButton, QLabel, QFileDialog, QSpinBox, QHBoxLayout, QTextEdit, QScrollArea
-)
-from PyQt5.QtGui import QPixmap
-
-"""
-gui_app.py
-Interfaz moderna para YamaLens con dos ventanas y navegación de resultados.
-"""
-
-import sys
-import os
-from pathlib import Path
-from PyQt5.QtWidgets import (
-    QApplication, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QFileDialog, QSpinBox, QLineEdit, QStackedWidget
+    QApplication, QWidget, QVBoxLayout, QPushButton, QLabel, QFileDialog, QHBoxLayout, QStackedWidget, QLineEdit, QComboBox
 )
 from PyQt5.QtGui import QPixmap, QFont
 from PyQt5.QtCore import Qt
@@ -36,7 +23,8 @@ except ImportError:
     spec = importlib.util.spec_from_file_location("model_infer", str(Path(__file__).parent.parent.parent / "src" / "models" / "model_infer.py"))
     model_infer = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(model_infer)
-    process_frame = model_infer.process_frame
+    def process_frame(frame_file, model_type='rfdetr'):
+        return model_infer.process_frame(frame_file, model_type)
 
 FRAMES_DIR = Path(__file__).parent / "frames-output"
 
@@ -72,6 +60,18 @@ class WelcomeWidget(QWidget):
         self.btn_select.enterEvent = lambda event: self.btn_select.setStyleSheet("background-color: #b20000; color: white; font-size: 18px; padding: 12px 32px; border-radius: 8px;")
         self.btn_select.leaveEvent = lambda event: self.btn_select.setStyleSheet("background-color: #ff1a1a; color: white; font-size: 18px; padding: 12px 32px; border-radius: 8px;")
         layout.addWidget(self.btn_select, alignment=Qt.AlignCenter)
+
+        # Selector de modelo
+        model_layout = QHBoxLayout()
+        model_layout.setAlignment(Qt.AlignCenter)
+        model_label = QLabel("Modelo de detección:")
+        model_label.setStyleSheet("color: white; font-size: 16px;")
+        self.model_selector = QComboBox()
+        self.model_selector.addItems(["RF-DETR", "YOLOv11"])
+        self.model_selector.setStyleSheet("background: white; color: black; font-size: 16px; border-radius: 6px; min-width: 100px;")
+        model_layout.addWidget(model_label)
+        model_layout.addWidget(self.model_selector)
+        layout.addLayout(model_layout)
 
         self.video_label = QLabel("")
         self.video_label.setStyleSheet("color: #ff1a1a; font-size: 16px; margin-bottom: 20px;")
@@ -187,6 +187,7 @@ class MainWindow(QWidget):
 
         self.video_path = None
         self.interval = 1
+        self.model_type = 'rfdetr'
 
         self.welcome = WelcomeWidget(self.handle_welcome_action)
         self.stacked.addWidget(self.welcome)
@@ -208,6 +209,9 @@ class MainWindow(QWidget):
             if not self.video_path:
                 self.welcome.btn_select.setText("Seleccione un video primero")
                 return
+            # Leer modelo seleccionado
+            selected = self.welcome.model_selector.currentText()
+            self.model_type = 'yolo' if selected == 'YOLOv11' else 'rfdetr'
             self.process_video()
 
     def process_video(self):
@@ -235,7 +239,7 @@ class MainWindow(QWidget):
         cap.release()
         # Procesar cada frame
         frames = sorted(FRAMES_DIR.glob("*.jpg"))
-        predictions = [process_frame(f) for f in frames]
+        predictions = [process_frame(f, self.model_type) for f in frames]
         self.results = ResultsWidget(frames, predictions, self.go_back)
         if self.stacked.count() > 1:
             self.stacked.removeWidget(self.stacked.widget(1))
@@ -248,5 +252,4 @@ class MainWindow(QWidget):
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = MainWindow()
-    # window.show()  # showFullScreen ya se llama en MainWindow
     sys.exit(app.exec_())

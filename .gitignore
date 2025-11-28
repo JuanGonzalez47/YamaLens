@@ -11,6 +11,7 @@ video_yolov11n.mp4
 /pruebas
 media/video_20250806_14_37_27.mp4
 /data/Pieces Count.v1-dataset-basis-5-classes-24-11-2025.coco
+/data/Pieces-Count-YOLO
 
 # Python virtual environments
 venv/
