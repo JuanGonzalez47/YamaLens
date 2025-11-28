@@ -12,11 +12,11 @@ YamaLens is a modular Python application for automatic piece counting in industr
 
 ## Project Demonstration
 
-https://github.com/user-attachments/assets/6ffdba19-f9b0-46a2-a418-06795a989671
+https://github.com/user-attachments/assets/3120734f-8643-4785-aee8-4285dacb6ec1
 
 ## Features
 - **Frame Extraction:** Extracts frames from video at user-defined intervals.
-- **Model Inference:** Uses a custom RF-DETR model to predict piece types and counts for each frame.
+- **Model Inference:** Uses a custom RF-DETR or YOLOv11 model to predict piece types and counts for each frame.
 - **Modern GUI:** PyQt5 interface with welcome screen, styled buttons, input fields, and navigation arrows for results.
 - **Results Viewer:** Displays each frame and its prediction, allowing navigation between results.
 
@@ -28,14 +28,24 @@ YamaLens/
 │       ├── train/
 │       ├── test/
 │       └── valid/
+	└── Pieces Count YOLO
+│       ├── train/
+│       ├── test/
+│       └── valid/
 ├── models/
 │   └── RF-DETR/
 │       ├── checkpoint_best_ema.pth
 │       ├── checkpoint_best_regular.pth
 │       ├── rf-detr-small.pth
 │       └── ...
+	└── YOLOv11/
+│       ├── best.pt
+│       ├── results.jpg
+│       ├── confusion_matrix.jpg
+│       └── ...
 ├── notebooks/
 │   └── RF-DETR.ipynb
+	└── YOLOv11.ipynb
 ├── reports/
 ├── src/
 │   ├── frame-extraction/
@@ -53,6 +63,7 @@ YamaLens/
 1. **Select a video** in the GUI.
 2. **Set the frame interval** (seconds between frames).
 3. **Run prediction:**
+	 - Select model to run prediction.
 	 - Frames are extracted and saved.
 	 - Each frame is processed by the model.
 	 - Results (image + piece count/type) are shown in the GUI.
@@ -89,7 +100,7 @@ python src/gui/gui_app.py
 
 ## Authors
 - JuanGonzalez47
-- Project collaborators (see `reports/integrantes.txt.txt`)
+- Juan-Balvin
 
 ## License
 MIT
