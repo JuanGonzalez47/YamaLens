@@ -10,6 +10,10 @@ To request access to the dataset and training files, please send an email to jua
 
 YamaLens is a modular Python application for automatic piece counting in industrial videos using AI. It extracts frames from a video, runs inference with a trained model, and displays results in a modern GUI.
 
+## Project Demonstration
+
+https://github.com/user-attachments/assets/6ffdba19-f9b0-46a2-a418-06795a989671
+
 ## Features
 - **Frame Extraction:** Extracts frames from video at user-defined intervals.
 - **Model Inference:** Uses a custom RF-DETR model to predict piece types and counts for each frame.
