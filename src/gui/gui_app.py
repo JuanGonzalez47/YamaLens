@@ -26,6 +26,16 @@ except ImportError:
     def process_frame(frame_file, model_type='rfdetr'):
         return model_infer.process_frame(frame_file, model_type)
 
+# Importar la función de extracción de frames
+try:
+    from frame_extractor import extract_frames
+except ImportError:
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("frame_extractor", str(Path(__file__).parent.parent / "frame_extraction" / "frame_extractor.py"))
+    frame_extractor = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(frame_extractor)
+    extract_frames = frame_extractor.extract_frames
+
 FRAMES_DIR = Path(__file__).parent / "frames-output"
 
 class WelcomeWidget(QWidget):
@@ -218,27 +228,13 @@ class MainWindow(QWidget):
         # Eliminar frames previos
         for f in FRAMES_DIR.glob("*.jpg"):
             f.unlink()
-        # Extraer frames
-        cap = cv2.VideoCapture(self.video_path)
-        if not cap.isOpened():
-            self.welcome.btn_select.setText(f"No se pudo abrir el video: {self.video_path}")
-            return
-        fps = cap.get(cv2.CAP_PROP_FPS)
-        frame_interval = int(fps * self.interval)
-        frame_idx = 0
-        saved_idx = 0
-        while True:
-            ret, frame = cap.read()
-            if not ret:
-                break
-            if frame_idx % frame_interval == 0:
-                frame_file = FRAMES_DIR / f"frame_{saved_idx:04d}.jpg"
-                cv2.imwrite(str(frame_file), frame)
-                saved_idx += 1
-            frame_idx += 1
-        cap.release()
+        # Extraer frames usando la función centralizada
+        extract_frames(self.video_path, FRAMES_DIR, self.interval)
         # Procesar cada frame
         frames = sorted(FRAMES_DIR.glob("*.jpg"))
+        if not frames:
+            self.welcome.video_label.setText("No se extrajeron frames del video. Verifica el archivo y el intervalo.")
+            return
         predictions = [process_frame(f, self.model_type) for f in frames]
         self.results = ResultsWidget(frames, predictions, self.go_back)
         if self.stacked.count() > 1:

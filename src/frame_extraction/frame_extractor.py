@@ -17,10 +17,20 @@ def extract_frames(video_path, output_dir, interval_sec=1):
     video_path = str(video_path)
     output_dir = Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
+    # Verificar permisos de escritura
+    test_file = output_dir / "__test_write__.tmp"
+    try:
+        with open(test_file, "w") as f:
+            f.write("test")
+        test_file.unlink()
+        print(f"writing permises OK: {output_dir}")
+    except Exception as e:
+        print(f"Don't could write on the folder: {output_dir}\nError: {e}")
+        return
 
     cap = cv2.VideoCapture(video_path)
     if not cap.isOpened():
-        print(f"No se pudo abrir el video: {video_path}")
+        print(f"don't could open the video: {video_path}")
         return
 
     fps = cap.get(cv2.CAP_PROP_FPS)
